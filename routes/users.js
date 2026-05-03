@@ -2,35 +2,37 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const db = require('../db')
+const { getDb, run, get, lastInsertRowid } = require('../db')
 
 const SECRET = 'commune-secret-2024'
 
 router.post('/inscription', async (req, res) => {
+  await getDb()
   const { nom, email, mot_de_passe, adresse, commune } = req.body
 
   if (!nom || !email || !mot_de_passe || !adresse || !commune) {
     return res.status(400).json({ erreur: 'Tous les champs sont obligatoires' })
   }
 
-  const existe = db.prepare('SELECT id FROM users WHERE email = ?').get(email)
+  const existe = get('SELECT id FROM users WHERE email = ?', [email])
   if (existe) {
-    return res.status(400).json({ erreur: 'Cet email est déjà utilisé' })
+    return res.status(400).json({ erreur: 'Cet email est deja utilise' })
   }
 
   const hash = await bcrypt.hash(mot_de_passe, 10)
-  const result = db.prepare(
-    'INSERT INTO users (nom, email, mot_de_passe, adresse, commune) VALUES (?, ?, ?, ?, ?)'
-  ).run(nom, email, hash, adresse, commune)
+  run('INSERT INTO users (nom, email, mot_de_passe, adresse, commune) VALUES (?, ?, ?, ?, ?)',
+    [nom, email, hash, adresse, commune])
+  const id = lastInsertRowid()
 
-  const token = jwt.sign({ id: result.lastInsertRowid, nom, commune }, SECRET)
+  const token = jwt.sign({ id, nom, commune }, SECRET)
   res.json({ token, nom, commune })
 })
 
 router.post('/connexion', async (req, res) => {
+  await getDb()
   const { email, mot_de_passe } = req.body
 
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email)
+  const user = get('SELECT * FROM users WHERE email = ?', [email])
   if (!user) {
     return res.status(400).json({ erreur: 'Email ou mot de passe incorrect' })
   }

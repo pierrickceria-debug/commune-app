@@ -1,4 +1,4 @@
-const API = 'http://localhost:3000/api/ideas'
+const API = '/api/ideas'
 
 const token = localStorage.getItem('token')
 const nom = localStorage.getItem('nom')

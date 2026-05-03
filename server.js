@@ -2,6 +2,8 @@ const express = require('express')
 const cors = require('cors')
 const path = require('path')
 const multer = require('multer')
+const fs = require('fs')
+if (!fs.existsSync('uploads')) fs.mkdirSync('uploads')
 const ideasRouter = require('./routes/ideas')
 const usersRouter = require('./routes/users')
 

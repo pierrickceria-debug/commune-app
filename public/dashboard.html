@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon tableau de bord</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:2rem; }
+    .stat-card { background:white; border:1px solid #e8e8e0; border-radius:12px; padding:1.25rem; text-align:center; }
+    .stat-number { font-size:36px; font-weight:600; color:#1D9E75; }
+    .stat-label { font-size:13px; color:#999; margin-top:4px; }
+    .mes-idees { background:white; border:1px solid #e8e8e0; border-radius:12px; padding:1.5rem; }
+    .mes-idees h3 { font-size:16px; font-weight:600; margin-bottom:1rem; }
+    .mon-idee { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid #f0f0e8; }
+    .mon-idee:last-child { border-bottom:none; }
+    .mon-idee-titre { font-size:14px; font-weight:500; color:#2c2c2a; margin-bottom:4px; }
+    .mon-idee-date { font-size:12px; color:#bbb; }
+    .mon-idee-votes { font-size:13px; color:#1D9E75; font-weight:500; white-space:nowrap; margin-left:12px; }
+    .vide { text-align:center; color:#bbb; font-size:14px; padding:2rem 0; }
+    .nav-tabs { display:flex; gap:8px; margin-bottom:1.5rem; }
+    .nav-tab { padding:7px 16px; border-radius:8px; border:1px solid #e0e0d8; font-size:13px; cursor:pointer; background:transparent; color:#666; text-decoration:none; transition:all 0.15s; }
+    .nav-tab:hover { background:#f5f5f0; }
+    .nav-tab.actif { background:#1D9E75; color:white; border-color:#1D9E75; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Ma commune, ma voix</h1>
+      <p>Exprimez vos idees pour ameliorer notre commune</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="user-info" style="font-size:13px;color:white;opacity:0.9;"></span>
+      <button onclick="seDeconnecter()" style="background:transparent;border:1px solid rgba(255,255,255,0.5);color:white;padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;">Se deconnecter</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="nav-tabs">
+      <a href="/index.html" class="nav-tab">Publications</a>
+      <a href="/dashboard.html" class="nav-tab actif">Mon tableau de bord</a>
+    </div>
+
+    <section>
+      <h2 style="margin-bottom:1rem;">Mon tableau de bord</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="nb-idees">0</div>
+          <div class="stat-label">Idees publiees</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="nb-votes">0</div>
+          <div class="stat-label">Votes recus</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="nb-commentaires">0</div>
+          <div class="stat-label">Commentaires postes</div>
+        </div>
+      </div>
+      <div class="mes-idees">
+        <h3>Mes idees publiees</h3>
+        <div id="liste-idees"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    var token = localStorage.getItem('token')
+    var nom = localStorage.getItem('nom')
+    var commune = localStorage.getItem('commune')
+
+    if (!token) window.location.href = '/login.html'
+
+    document.getElementById('user-info').textContent = 'Bonjour ' + nom + ' - ' + commune
+
+    function seDeconnecter() {
+      localStorage.removeItem('token')
+      localStorage.removeItem('nom')
+      localStorage.removeItem('commune')
+      window.location.href = '/login.html'
+    }
+
+    async function chargerStats() {
+      var res = await fetch('/api/ideas/stats', {
+        headers: { Authorization: 'Bearer ' + token }
+      })
+      var data = await res.json()
+
+      document.getElementById('nb-idees').textContent = data.idees
+      document.getElementById('nb-votes').textContent = data.votes
+      document.getElementById('nb-commentaires').textContent = data.commentaires
+
+      var liste = document.getElementById('liste-idees')
+
+      if (data.mesIdees.length === 0) {
+        liste.innerHTML = '<p class="vide">Vous n\'avez pas encore publie d\'idee.</p>'
+        return
+      }
+
+      liste.innerHTML = data.mesIdees.map(function(idee) {
+        return '<div class="mon-idee">' +
+          '<div>' +
+            '<div class="mon-idee-titre">' + idee.title + '</div>' +
+            '<div class="mon-idee-date">' + new Date(idee.created_at).toLocaleDateString('fr-FR') + '</div>' +
+          '</div>' +
+          '<div class="mon-idee-votes">👍 ' + idee.votes + ' vote' + (idee.votes > 1 ? 's' : '') + '</div>' +
+        '</div>'
+      }).join('')
+    }
+
+    chargerStats()
+  </script>
+</body>
+</html>

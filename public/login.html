@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ma commune, ma voix</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      display: flex;
+      min-height: 100vh;
+      background: #f5f5f0;
+    }
+
+    /* Colonne gauche */
+    .gauche {
+      flex: 1;
+      background: #1D9E75;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      color: white;
+    }
+
+    .gauche .illustration {
+      width: 260px;
+      height: 320px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px;
+    }
+
+    .gauche h2 {
+      font-size: 28px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .gauche h2 span {
+      color: #ADEDCF;
+    }
+
+    .gauche p {
+      font-size: 15px;
+      opacity: 0.8;
+      text-align: center;
+      max-width: 320px;
+      line-height: 1.6;
+    }
+
+    /* Colonne droite */
+    .droite {
+      width: 420px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2.5rem;
+    }
+
+    .droite h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 2rem;
+      align-self: flex-start;
+    }
+
+    .onglets {
+      display: flex;
+      width: 100%;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 1.5rem;
+    }
+
+    .onglet {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      color: #999;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .onglet.actif {
+      color: #1D9E75;
+      border-bottom: 2px solid #1D9E75;
+    }
+
+    .form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #e0e0d8;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #fafaf8;
+      color: #2c2c2a;
+      transition: border-color 0.15s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #1D9E75;
+      background: white;
+    }
+
+    .btn-principal {
+      width: 100%;
+      background: #1D9E75;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.15s;
+    }
+
+    .btn-principal:hover { background: #0F6E56; }
+
+    .erreur {
+      font-size: 13px;
+      color: #A32D2D;
+      display: none;
+      background: #FCEBEB;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+
+    .separateur {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0;
+      color: #ccc;
+      font-size: 12px;
+    }
+
+    .separateur::before,
+    .separateur::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #eee;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      font-size: 12px;
+      color: #bbb;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Colonne gauche -->
+  <div class="gauche">
+    <div class="illustration">🏘️</div>
+    <h2>Découvrez les idées de vos <span>voisins</span>.</h2>
+    <p>Participez à la vie de votre commune, proposez des idées et votez pour celles qui vous tiennent à cœur.</p>
+  </div>
+
+  <!-- Colonne droite -->
+  <div class="droite">
+    <h1>Ma commune, ma voix</h1>
+
+    <div class="onglets">
+      <button class="onglet actif" id="btn-connexion" onclick="afficher('connexion')">Se connecter</button>
+      <button class="onglet" id="btn-inscription" onclick="afficher('inscription')">Créer un compte</button>
+    </div>
+
+    <!-- Connexion -->
+    <div class="form" id="connexion">
+      <input type="email" id="c-email" placeholder="Adresse email">
+      <input type="password" id="c-mdp" placeholder="Mot de passe">
+      <p class="erreur" id="c-erreur"></p>
+      <button class="btn-principal" onclick="seConnecter()">Se connecter</button>
+    </div>
+
+    <!-- Inscription -->
+    <div class="form" id="inscription" style="display:none;">
+      <input type="text" id="i-nom" placeholder="Nom complet">
+      <input type="email" id="i-email" placeholder="Adresse email">
+      <input type="password" id="i-mdp" placeholder="Mot de passe">
+      <input type="text" id="i-adresse" placeholder="Adresse postale">
+      <input type="text" id="i-commune" placeholder="Votre commune">
+      <p class="erreur" id="i-erreur"></p>
+      <button class="btn-principal" onclick="sInscrire()">Créer mon compte</button>
+    </div>
+
+    <div class="footer">Ma commune, ma voix — Démocratie participative locale</div>
+  </div>
+
+  <script>
+    function afficher(section) {
+      document.getElementById('connexion').style.display = section === 'connexion' ? 'flex' : 'none'
+      document.getElementById('inscription').style.display = section === 'inscription' ? 'flex' : 'none'
+      document.getElementById('btn-connexion').className = 'onglet' + (section === 'connexion' ? ' actif' : '')
+      document.getElementById('btn-inscription').className = 'onglet' + (section === 'inscription' ? ' actif' : '')
+    }
+
+    async function seConnecter() {
+      const email = document.getElementById('c-email').value.trim()
+      const mot_de_passe = document.getElementById('c-mdp').value.trim()
+      const erreur = document.getElementById('c-erreur')
+
+      const res = await fetch('/api/users/connexion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, mot_de_passe })
+      })
+
+      const data = await res.json()
+      if (!res.ok) {
+        erreur.textContent = data.erreur
+        erreur.style.display = 'block'
+        return
+      }
+
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('nom', data.nom)
+      localStorage.setItem('commune', data.commune)
+      window.location.href = '/index.html'
+    }
+
+    async function sInscrire() {
+      const nom = document.getElementById('i-nom').value.trim()
+      const email = document.getElementById('i-email').value.trim()
+      const mot_de_passe = document.getElementById('i-mdp').value.trim()
+      const adresse = document.getElementById('i-adresse').value.trim()
+      const commune = document.getElementById('i-commune').value.trim()
+      const erreur = document.getElementById('i-erreur')
+
+      const res = await fetch('/api/users/inscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nom, email, mot_de_passe, adresse, commune })
+      })
+
+      const data = await res.json()
+      if (!res.ok) {
+        erreur.textContent = data.erreur
+        erreur.style.display = 'block'
+        return
+      }
+
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('nom', data.nom)
+      localStorage.setItem('commune', data.commune)
+      window.location.href = '/index.html'
+    }
+
+    if (localStorage.getItem('token')) {
+      window.location.href = '/index.html'
+    }
+  </script>
+</body>
+</html>

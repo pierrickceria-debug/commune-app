@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ma commune, ma voix</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Ma commune, ma voix</h1>
+      <p>Exprimez vos idées pour améliorer notre commune</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="user-info" style="font-size:13px;color:white;opacity:0.9;"></span>
+      <button onclick="seDeconnecter()" style="background:transparent;border:1px solid rgba(255,255,255,0.5);color:white;padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;">Se déconnecter</button>
+    </div>
+  </header>
+
+  <main>
+<div class="nav-tabs">
+  <a href="/index.html" class="nav-tab actif">Publications</a>
+  <a href="/dashboard.html" class="nav-tab">Mon tableau de bord</a>
+</div>
+    <section id="liste">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <h2>Publications récentes</h2>
+        <button class="publier" onclick="afficherFormulaire()">+ Nouvelle idée</button>
+      </div>
+      <div id="ideas-container"></div>
+    </section>
+
+<section id="formulaire" style="display:none;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+    <h2>Proposer une idée</h2>
+    <button onclick="masquerFormulaire()" style="background:transparent;border:none;font-size:13px;color:#999;cursor:pointer;">✕ Annuler</button>
+  </div>
+  <input type="text" id="title" placeholder="Titre de votre idée">
+  <select id="category">
+    <option>Environnement</option>
+    <option>Mobilité</option>
+    <option>Culture</option>
+    <option>Sécurité</option>
+    <option>Autre</option>
+  </select>
+  <textarea id="body" placeholder="Décrivez votre idée..."></textarea>
+  <div style="border:2px dashed #e0e0d8;border-radius:8px;padding:1rem;text-align:center;cursor:pointer;" onclick="document.getElementById('photo-input').click()">
+    <div id="photo-preview" style="display:none;margin-bottom:8px;">
+      <img id="photo-img" style="max-width:100%;border-radius:8px;max-height:200px;" />
+    </div>
+    <span id="photo-label" style="font-size:13px;color:#999;">📷 Ajouter une photo (optionnel)</span>
+    <input type="file" id="photo-input" accept="image/*" style="display:none;" onchange="previewPhoto(event)">
+  </div>
+  <button class="publier" onclick="publierIdee()">Publier mon idée</button>
+</section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
